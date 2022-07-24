@@ -16,6 +16,7 @@ Department obj = new Department(2, "books");
 
 
 SellerDAO dao = DaoFactory.createSellerDao();
+System.out.println("=== test 1 === findById");
 Seller seller  = dao.findById(3);
 System.out.println(seller);
 	}
