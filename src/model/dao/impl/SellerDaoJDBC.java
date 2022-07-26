@@ -1,9 +1,11 @@
 package model.dao.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +26,31 @@ public class SellerDaoJDBC implements SellerDAO {
 
 	@Override
 	public void insert(Seller obj) {
-		// TODO Auto-generated method stub
-
+PreparedStatement stmt = null;
+try {
+	stmt = conn.prepareStatement("insert into seller (Name, Email, BirthDate, BaseSalary, DepartmentId) values (?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+	stmt.setString(1, obj.getName());
+	stmt.setString(2, obj.getEmail());
+	stmt.setDate(3, new java.sql.Date(obj.getBithDate().getTime()));
+	stmt.setDouble(4, obj.getBaseSalary());
+	stmt.setInt(5, obj.getDepartment().getId());
+	int rowsAffected = stmt.executeUpdate();
+	if(rowsAffected>0) {
+		ResultSet rs = stmt.getGeneratedKeys();
+		if(rs.next()) {
+			int id = rs.getInt(1);
+			obj.setId(id);
+		}
+		DB.closedResultSet(rs);
+	}else {
+	throw new DbException("erro inespeado, nenhuma linha afetada!");
+	}
+} catch (SQLException e) {
+	throw new DbException("error "+e.getMessage());
+}finally {
+	DB.closedStatement(stmt);
+	
+}
 	}
 
 	@Override
@@ -87,8 +112,29 @@ public class SellerDaoJDBC implements SellerDAO {
 
 	@Override
 	public List<Seller> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			stmt = conn.prepareStatement("select seller.*, " + "department.Name" + " as DepName from" + " seller inner"
+					+ " join department" + " on seller.DepartmentId=department.Id");
+			rs = stmt.executeQuery();
+			List<Seller> list = new ArrayList<Seller>();
+			Map<Integer, Department> map = new HashMap<>();
+			while (rs.next()) {
+				Department dep = instanciateDepartment(rs);
+				map.put(rs.getInt("DepartmentId"), dep);
+				Seller obj = intanciateSeller(rs, dep);
+				list.add(obj);
+			}
+			return list;
+
+		} catch (SQLException e) {
+			throw new DbException("erro" + e.getMessage());
+		} finally {
+			DB.closedStatement(stmt);
+			DB.closedResultSet(rs);
+		}
+
 	}
 
 	@Override
