@@ -55,8 +55,23 @@ try {
 
 	@Override
 	public void update(Seller obj) {
-		// TODO Auto-generated method stub
-
+PreparedStatement stmt = null;
+try {
+	stmt = conn.prepareStatement("update seller set Name=?, Email=?,BirthDate=?,BaseSalary=?, DepartmentId=? where Id=?");
+	stmt.setString(1, obj.getName());
+	stmt.setString(2, obj.getEmail());
+	stmt.setDate(3, new java.sql.Date(obj.getBithDate().getTime()));
+	stmt.setDouble(4, obj.getBaseSalary());
+	stmt.setInt(5, obj.getDepartment().getId());
+	stmt.setInt(6, obj.getId());
+	stmt.executeUpdate();
+	
+	
+} catch (SQLException e) {
+throw new DbException("error: "+e.getMessage());
+}finally {
+	DB.closedStatement(stmt);
+}
 	}
 
 	@Override

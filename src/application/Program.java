@@ -35,6 +35,14 @@ System.out.println("=== test 3 === findByAll");
 Seller newSeller = new Seller(null,"Greg green" , "green@gmail.com", new Date(), 5000.0, department);
 	sellerDao.insert(newSeller);
 	System.out.println("inserted! "+newSeller.getId());
+	
+	System.out.println("=== test 5 update === ");
+   seller = sellerDao.findById(1);
+   seller.setName("Martha wine");
+   sellerDao.update(seller);
+   System.out.println("update copleted!");
+	
 	}
+	
 
 }
