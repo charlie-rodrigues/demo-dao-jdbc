@@ -75,9 +75,17 @@ throw new DbException("error: "+e.getMessage());
 	}
 
 	@Override
-	public void delete(Seller obj) {
-		// TODO Auto-generated method stub
-
+	public void delete(Integer id) {
+     PreparedStatement stmt = null;
+     try {
+		stmt = conn.prepareStatement("delete from seller where id=? ");
+		stmt.setInt(1, id);
+		stmt.executeUpdate();
+	} catch (SQLException e) {
+		throw new DbException("error: "+e.getMessage());
+	}finally {
+		DB.closedStatement(stmt);
+	}
 	}
 
 	@Override
